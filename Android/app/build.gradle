@@ -3,6 +3,9 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 android {
     namespace 'com.confuse.dailypang'
     compileSdk 32
@@ -18,6 +21,8 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        buildConfigField "String","KAKAO_NATIVE_APP_KEY",properties['kakao_native_app_key']
+        resValue "string","kakao_oauth_host",properties['kakao_native_app_key']
     }
 
     buildTypes {
@@ -65,5 +70,14 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
     // kakaoLogin
-    implementation "com.kakao.sdk:v2-user:2.4.2" // 카카오 로그인
+    implementation "com.kakao.sdk:v2-all:2.12.0" // 전체 모듈 설치, 2.11.0 버전부터 지원
+    implementation "com.kakao.sdk:v2-user:2.12.0" // 카카오 로그인
+    implementation "com.kakao.sdk:v2-talk:2.12.0" // 친구, 메시지(카카오톡)
+    implementation "com.kakao.sdk:v2-story:2.12.0" // 카카오스토리
+    implementation "com.kakao.sdk:v2-share:2.12.0" // 메시지(카카오톡 공유)
+    implementation "com.kakao.sdk:v2-navi:2.12.0" // 카카오내비
+    implementation "com.kakao.sdk:v2-friend:2.12.0" // 카카오톡 소셜 피커, 리소스 번들 파일 포함
+
+    // viewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07"
 }
