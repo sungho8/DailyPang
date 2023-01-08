@@ -1,0 +1,21 @@
+#spring:
+#  security:
+#    oauth2:
+#      client:
+#        registration: ## ????? ??
+#          kakao:
+#            authorization-grant-type: authorization_code
+#            client-id: 61cab660c24d95b7333e395ae0d95c68
+#            client-name: DailyPang
+#            client-secret: 61cab660c24d95b7333e395ae0d95c68
+#            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+#            client-authentication-method: POST
+#            scope: openid, profile_nickname, account_email
+#        provider:
+#          kakao:
+#            authorization-uri: https://kauth.kakao.com/oauth/authorize
+#            token-uri: https://kauth.kakao.com/oauth/token
+#            issuer-uri: https://kauth.kakao.com
+#            jwk-set-uri: https://kauth.kakao.com/.well-known/jwks.json
+#            user-info-uri: https://kapi.kakao.com/v2/user/me
+#            user-name-attribute: sub
