@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -37,11 +38,27 @@ import java.security.MessageDigest
 
 
 class MainActivity : ComponentActivity() {
-    private val kakaoAuthViewModel : KakaoAuthViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        try {
+            val information =
+                packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES)
+            val signatures = information.signingInfo.apkContentsSigners
+            val md = MessageDigest.getInstance("SHA")
+            for (signature in signatures) {
+                val md: MessageDigest
+                md = MessageDigest.getInstance("SHA")
+                md.update(signature.toByteArray())
+                var hashcode = String(Base64.encode(md.digest(), 0))
+                Log.d("hashcode", "" + hashcode)
+            }
+        } catch (e: Exception) {
+            Log.d("hashcode", "에러::" + e.toString())
+
+        }
+
         setContent {
             DailyPangTheme {
                 // A surface container using the 'background' color from the theme
@@ -69,8 +86,6 @@ fun DailyApp(){
         val currentRoute = currentDestination?.route
         val currentScreen = dailyTabRowScreens.find { it.route == currentRoute } ?: Calendar
 
-        Log.d("현재네비게이션","$currentRoute")
-
         Scaffold(
             bottomBar = {
                 if(currentRoute != Login.route)
@@ -88,7 +103,6 @@ fun DailyApp(){
         }
     }
 }
-
 
 @Composable
 fun DailyNavHost(
@@ -111,17 +125,15 @@ fun DailyNavHost(
             AnalyzeScreen()
         }
         composable(route = Profile.route){
-            ProfileScreen(onLoginButton = {
-                navController.navigateSingleTopTo(Login.route)
-            })
+            ProfileScreen(onLoginButton = { navController.navigateSingleTopTo(Login.route) })
         }
-
         composable(route = Login.route){
-            LoginScreen()
+            val kakaoAuthViewModel :KakaoAuthViewModel = viewModel()
+            LoginScreen(kakaoAuthViewModel)
         }
     }
 }
-//
+
 //// 전체적인 달력 틀
 //@Composable
 //fun Calendar(){
@@ -162,29 +174,11 @@ fun DailyNavHost(
 //
 //    }
 //}
-//
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     DailyApp()
 }
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun DatePreview(){
-//    DailyPangTheme {
-//        DateBlock(11,14,8,4)
-//    }
-//}
 
-fun NavHostController.navigateSingleTopTo(route: String) =
-    this.navigate(route) { launchSingleTop = true }
-
-fun Context.findActivity(): Activity {
-    var context = this
-    while (context is ContextWrapper) {
-        if (context is Activity) return context
-        context = context.baseContext
-    }
-    throw IllegalStateException("no activity")
-}
+fun NavHostController.navigateSingleTopTo(route: String) = this.navigate(route) { launchSingleTop = true }

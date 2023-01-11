@@ -16,29 +16,34 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.confuse.dailypang.DailyApp
 import com.confuse.dailypang.DailyDestination
 import java.util.*
 
 // 하단바
 @Composable
 fun DailyBottomRow(
-    allScreens: List<DailyDestination>,
-    onTabSelected: (DailyDestination) -> Unit,
-    currentScreen: DailyDestination
+    allScreens: List<DailyDestination>,         // 바텀바 구성요소
+    onTabSelected: (DailyDestination) -> Unit,  // 바텀바 클릭시 이벤트
+    currentScreen: DailyDestination             // 현재 선택된 스크린
 ){
     Surface(
         modifier = Modifier.height(TabHeight)
             .fillMaxWidth()
     ) {
-        Row(Modifier.selectableGroup()){
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.selectableGroup()){
             allScreens.forEach { screen ->
                 DailyTab(
                     text = screen.route,
@@ -61,6 +66,7 @@ fun DailyTab(
     val color = MaterialTheme.colors.onSurface
     val durationMillis = if(selected) TabFadeInAnimationDuration else TabFadeOutAnimationDuration
 
+    // fade in out
     val animSpec = remember {
         tween<Color>(
             durationMillis = durationMillis,
@@ -68,11 +74,13 @@ fun DailyTab(
             delayMillis = TabFadeInAnimationDelay
         )
     }
+    // 선택시 색깔
     val tabTintColor by animateColorAsState(
         targetValue = if (selected) color else color.copy(alpha = InactiveTabOpacity),
         animationSpec = animSpec
     )
-    Row(
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .padding(16.dp)
             .animateContentSize()
@@ -92,15 +100,15 @@ fun DailyTab(
     ) {
         Icon(imageVector = icon, contentDescription = text, tint = tabTintColor)
         if (selected) {
-            Spacer(Modifier.width(12.dp))
             Text(text.uppercase(Locale.getDefault()), color = tabTintColor)
         }
     }
 }
 
-private val TabHeight = 56.dp
+
+private val TabHeight = 156.dp
 private const val InactiveTabOpacity = 0.60f
 
-private const val TabFadeInAnimationDuration = 150
+private const val TabFadeInAnimationDuration = 100
 private const val TabFadeInAnimationDelay = 100
 private const val TabFadeOutAnimationDuration = 100
