@@ -26,24 +26,27 @@ public class UserController {
     UserRepository userRepository;
 
     @PostMapping("/user/signup")
-    public Long signUp() {
+    public String signUp() {
         System.out.println("user signup");
         User user = User.builder().achievement(0L).build();
         User saveUser = userRepository.save(user);
-        return saveUser.getUserId();
+        return "user(id=" + saveUser.getUserId() + ") signed up";
     }
 
     @PostMapping("/user/signin")
-    public Long signIn(@RequestParam(value="user_id")Long userId) throws Exception {
+    public String signIn(@RequestParam(value="user_id")Long userId) throws Exception {
         System.out.println("user signin");
         Optional<User> user = userRepository.find(userId);
         if (!user.isPresent()) throw new Exception();
-        return user.get().getAchievement();
+        return "user(id=" + user.get().getUserId() + ") signed in, user's achievement=" + user.get().getAchievement();
     }
 
     @PostMapping("/user/achieve")
-    public void achieve(@RequestParam(value="user_id")Long userId) {
+    public String achieve(@RequestParam(value="user_id")Long userId) throws Exception {
         System.out.println("user achieve");
         userRepository.achieveOne(userId);
+        Optional<User> user = userRepository.find(userId);
+        if (!user.isPresent()) throw new Exception();
+        return "user(id=" +  user.get().getUserId() + ")'s achievement is increased by 1, user's achievement=" + user.get().getAchievement();
     }
 }
